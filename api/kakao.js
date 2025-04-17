@@ -35,7 +35,7 @@ kakao.get('/', async function (req, res) {
             params: {
                 grant_type: "authorization_code",
                 client_id: "f26d70de4f91fb13430539fe82bcebfc",
-                redirect_uri: "http://localhost:3000/kakao/redirect",
+                redirect_uri: `${process.env.REACT_APP_APIURL}/kakao/redirect`,
                 code
             }
             
