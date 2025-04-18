@@ -15,7 +15,6 @@ async function dataCtrl() {
     console.log("MongoDB 연결 완료");
 }
 
-// 서버 시작 시 데이터베이스 연결
 async function initDB() {
     await dataCtrl();
 }
@@ -24,13 +23,18 @@ initDB();
 
 kakao.get('/', async function (req, res) {
     const { code } = req.query;
+    console.log("인가 코드:", code);
+    console.log("redirect_uri:", process.env.CLIENT_REDIRECT_URI);
+
+    console.error("카카오 로그인 처리 중 오류 발생:", error.response?.data || error.message);
+    console.error("카카오 로그인 에러 전체:", error);
+    console.error("카카오 로그인 에러 전체:", error);
+
+
 
     if (!code) {
         return res.status(400).json({ error: 'Authorization code is missing' });
     }
-
-    console.log(code),'==========';
-    
 
     try {
         let tokenResponse = await axios.post("https://kauth.kakao.com/oauth/token", null, {
@@ -45,9 +49,8 @@ kakao.get('/', async function (req, res) {
             
         });
 
-       
-
         if (!tokenResponse.data.access_token) {
+            return res.status(500).json({ error: 'Access token을 받아오지 못했습니다.' });
         }
 
         let access_token = tokenResponse.data.access_token;
@@ -59,8 +62,6 @@ kakao.get('/', async function (req, res) {
             },
             timeout: 30000,
         });
-
-        console.log(userResponse,'============');
 
         let userData = userResponse.data;
 

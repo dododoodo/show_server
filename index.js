@@ -1,8 +1,8 @@
 require('dotenv').config();
 
+const cors = require('cors'); 
 const express = require('express');
 const app = express();
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const kakao = require('./api/kakao');
 const naver = require('./api/naver');
@@ -12,6 +12,11 @@ const kcisa = require('./api/kcisa');
 let corsOptions = {
     origin: "*"
   };
+
+app.use(cors({
+  origin: 'https://gotoashow.vercel.app',
+  credentials: true
+}));
  
 app.use(cors(corsOptions));
 

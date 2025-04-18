@@ -3,7 +3,6 @@ const express = require('express');
 const axios = require('axios');
 const naver = express.Router();
 
-
 naver.get('/', async function (req, res) {
     const {access_token} = req.query;
 
