@@ -29,6 +29,9 @@ kakao.get('/', async function (req, res) {
         return res.status(400).json({ error: 'Authorization code is missing' });
     }
 
+    console.log(code);
+    
+
     try {
         let tokenResponse = await axios.post("https://kauth.kakao.com/oauth/token", null, {
             headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
@@ -41,6 +44,8 @@ kakao.get('/', async function (req, res) {
             timeout: 30000,
             
         });
+
+        console.log(tokenResponse);
 
         if (!tokenResponse.data.access_token) {
         }
