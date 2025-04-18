@@ -29,7 +29,7 @@ kakao.get('/', async function (req, res) {
         return res.status(400).json({ error: 'Authorization code is missing' });
     }
 
-    console.log(code);
+    console.log(code),'==========';
     
 
     try {
@@ -45,7 +45,7 @@ kakao.get('/', async function (req, res) {
             
         });
 
-        console.log(tokenResponse);
+       
 
         if (!tokenResponse.data.access_token) {
         }
@@ -59,6 +59,8 @@ kakao.get('/', async function (req, res) {
             },
             timeout: 30000,
         });
+
+        console.log(userResponse,'============');
 
         let userData = userResponse.data;
 
