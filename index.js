@@ -23,3 +23,5 @@ app.use('/naver', naver);
 
 
 app.use('/kcisa', kcisa);
+
+app.listen(3000);
