@@ -11,12 +11,7 @@ const kcisa = require('./api/kcisa');
 
 let corsOptions = {
     origin: "*"
-  };
-
-app.use(cors({
-  origin: 'https://gotoashow.vercel.app',
-  credentials: true
-}));
+};
  
 app.use(cors(corsOptions));
 
