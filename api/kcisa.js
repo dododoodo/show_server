@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
       pageNo,
       format: 'json'
     },
-    timeout: 50000,
+    timeout: 20000,
     headers: {
       'User-Agent': 'Mozilla/5.0',
       'Accept': 'application/json',
