@@ -10,8 +10,7 @@ const kcisa = require('./api/kcisa');
 
 
 let corsOptions = {
-    origin: "*", 
-    credential: true,
+    origin: "*"
   };
  
 app.use(cors(corsOptions));
