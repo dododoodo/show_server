@@ -35,9 +35,10 @@ kakao.get('/', async function (req, res) {
             params: {
                 grant_type: "authorization_code",
                 client_id: "f26d70de4f91fb13430539fe82bcebfc",
-                redirect_uri: `${process.env.REACT_APP_APIURL}/kakao/redirect`,
+                redirect_uri: `${process.env.CLIENT_REDIRECT_URI}`,
                 code
-            }
+            },
+            timeout: 30000,
             
         });
 
@@ -50,7 +51,8 @@ kakao.get('/', async function (req, res) {
             headers: {
                 "Authorization": `Bearer ${access_token}`,
                 "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
-            }
+            },
+            timeout: 30000,
         });
 
         let userData = userResponse.data;
