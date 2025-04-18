@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
       'Accept': 'application/json',
     }
   });
+  console.log(response)
 
   res.json(response.data);
 });
