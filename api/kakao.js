@@ -1,71 +1,59 @@
-const express = require('express');
-const kakao = express.Router();
-const axios = require('axios');
-const { MongoClient } = require('mongodb');
+const { MongoClient } = require("mongodb");
+const axios = require("axios");
 
 const uri = "mongodb+srv://nsa10050:rlaehdus0823@gotoashow.9ufcsbx.mongodb.net/?retryWrites=true&w=majority&appName=gotoashow";
 const client = new MongoClient(uri);
 
 let collection;
 
-async function dataCtrl() {
-    await client.connect();
-    const db = client.db('gotoashow');
-    collection = db.collection('member');
-    console.log("MongoDB 연결 완료");
+async function connectDB() {
+    if (!collection) {
+        await client.connect();
+        const db = client.db("gotoashow");
+        collection = db.collection("member");
+        console.log("MongoDB 연결 완료");
+    }
 }
 
-async function initDB() {
-    await dataCtrl();
-}
+module.exports = async (req, res) => {
+    if (req.method !== "GET") {
+        return res.status(405).json({ error: "Method Not Allowed" });
+    }
 
-initDB();
-
-kakao.get('/', async function (req, res) {
     const { code } = req.query;
+
     console.log("인가 코드:", code);
     console.log("redirect_uri:", process.env.CLIENT_REDIRECT_URI);
 
-    console.error("카카오 로그인 처리 중 오류 발생:", error.response?.data || error.message);
-    console.error("카카오 로그인 에러 전체:", error);
-    console.error("카카오 로그인 에러 전체:", error);
-
-
-
     if (!code) {
-        return res.status(400).json({ error: 'Authorization code is missing' });
+        return res.status(400).json({ error: "Authorization code is missing" });
     }
 
     try {
-        let tokenResponse = await axios.post("https://kauth.kakao.com/oauth/token", null, {
+        await connectDB();
+
+        const tokenResponse = await axios.post("https://kauth.kakao.com/oauth/token", null, {
             headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
             params: {
                 grant_type: "authorization_code",
                 client_id: "f26d70de4f91fb13430539fe82bcebfc",
-                redirect_uri: `${process.env.CLIENT_REDIRECT_URI}`,
+                redirect_uri: process.env.CLIENT_REDIRECT_URI,
                 code
             },
-            timeout: 30000,
-            
         });
 
-        if (!tokenResponse.data.access_token) {
-            return res.status(500).json({ error: 'Access token을 받아오지 못했습니다.' });
-        }
+        const access_token = tokenResponse.data.access_token;
 
-        let access_token = tokenResponse.data.access_token;
-
-        let userResponse = await axios.post("https://kapi.kakao.com/v2/user/me", null, {
+        const userResponse = await axios.post("https://kapi.kakao.com/v2/user/me", null, {
             headers: {
                 "Authorization": `Bearer ${access_token}`,
                 "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
             },
-            timeout: 30000,
         });
 
-        let userData = userResponse.data;
+        const userData = userResponse.data;
 
-        let existingUser = await collection.findOne({ id: userData.id });
+        const existingUser = await collection.findOne({ id: userData.id });
 
         if (!existingUser) {
             await collection.insertOne({
@@ -74,16 +62,13 @@ kakao.get('/', async function (req, res) {
             });
         }
 
-        res.json({
+        res.status(200).json({
             access_token,
             properties: userData.properties
         });
 
     } catch (error) {
-        console.error("카카오 로그인 처리 중 오류 발생:", error.response?.data || error.message);
-        res.status(500).json({ error: '카카오 로그인 처리 중 오류 발생', details: error.response?.data || error.message });
+        console.error("카카오 로그인 오류:", error.response?.data || error.message);
+        res.status(500).json({ error: "카카오 로그인 실패", details: error.response?.data || error.message });
     }
-    
-});
-
-module.exports = kakao;
+};
