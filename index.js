@@ -9,7 +9,12 @@ const naver = require('./api/naver');
 const kcisa = require('./api/kcisa');
 
 
-app.use(cors());
+let corsOptions = {
+    origin: "*", 
+    credential: true,
+  };
+ 
+app.use(cors(corsOptions));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
